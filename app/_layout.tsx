@@ -74,6 +74,27 @@ export default function RootLayout() {
             headerRight: () => <ThemeToggle />,
           }}
         />
+        <Stack.Screen
+          name='history'
+          options={{
+            title: 'Translator',
+            headerRight: () => <ThemeToggle />,
+          }}
+        />
+        <Stack.Screen
+          name='image'
+          options={{
+            title: 'Translator',
+            headerRight: () => <ThemeToggle />,
+          }}
+        />
+        <Stack.Screen
+          name='video'
+          options={{
+            title: 'Translator',
+            headerRight: () => <ThemeToggle />,
+          }}
+        />
       </Stack>
       <PortalHost />
     </ThemeProvider>

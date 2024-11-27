@@ -5,24 +5,21 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
-import { Input } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { Text } from '~/components/ui/text';
 import { CloudUpload } from '~/lib/icons/CloudUpload';
 import { Clapperboard } from '~/lib/icons/Clapperboard';
 import { Camera } from '~/lib/icons/Camera';
 import { Video } from '~/lib/icons/Video';
-import { Loader } from '~/lib/icons/Loader';
-import { Textarea } from '~/components/ui/textarea';
-import { Progress } from '~/components/ui/progress';
+import { useRouter } from 'expo-router';
 
 
 export default function Screen() {
+
+  const router = useRouter()
 
   const [value, setValue] = React.useState('image');
 
@@ -66,12 +63,12 @@ export default function Screen() {
               </CardDescription>
             </CardHeader>
             <CardContent className='flex-row justify-between gap-2 native:gap-2'>
-              <Button className='flex-row gap-2 w-1/2' variant={'outline'}>
+              <Button className='flex-row gap-2 w-1/2' variant={'outline'} onPress={() => router.push('/image')}>
                 <Camera className='text-foreground' size={17} />
                 <Text>Take Image</Text>
               </Button>
               <Button className='flex-row gap-2 w-1/2' variant={'outline'}>
-                <CloudUpload className='text-foreground' size={17} />
+                <CloudUpload className='text-foreground' size={17} onPress={() => router.push('/video')}/>
                 <Text>Upload Image</Text>
               </Button>
             </CardContent>
@@ -86,7 +83,7 @@ export default function Screen() {
               </CardDescription>
             </CardHeader>
             <CardContent className='flex-row justify-between gap-2 native:gap-2'>
-              <Button className='flex-row gap-2 w-1/2' variant={'outline'}>
+              <Button className='flex-row gap-2 w-1/2' variant={'outline'} onPress={() => router.push('/history')}>
                 <Video className='text-foreground' size={17} />
                 <Text>Film Video</Text>
               </Button>
@@ -98,18 +95,18 @@ export default function Screen() {
           </Card>
         </TabsContent>
       </Tabs>
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Result </CardTitle>
         </CardHeader>
         <CardContent className='flex-column gap-5 '>
           <View className='flex-row gap-2 justify-between items-center'>
-            <Loader color='white' className='text-foreground animate-spin' size={18} />
+            <Loader color={'black'} className='text-foreground' size={18} />
             <Progress className='w-5/6' value={progress} />
           </View>
           <Textarea />
         </CardContent>
-      </Card>
+      </Card> */}
     </View>
   )
 }
