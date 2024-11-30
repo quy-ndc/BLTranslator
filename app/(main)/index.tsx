@@ -15,6 +15,9 @@ import { Clapperboard } from '~/lib/icons/Clapperboard';
 import { Camera } from '~/lib/icons/Camera';
 import { Video } from '~/lib/icons/Video';
 import { useRouter } from 'expo-router';
+import { Loader } from '~/lib/icons/Loader';
+import { Progress } from '~/components/ui/progress';
+import { Textarea } from '~/components/ui/textarea';
 
 
 export default function Screen() {
@@ -68,7 +71,7 @@ export default function Screen() {
                 <Text>Take Image</Text>
               </Button>
               <Button className='flex-row gap-2 w-1/2' variant={'outline'}>
-                <CloudUpload className='text-foreground' size={17} onPress={() => router.push('/video')}/>
+                <CloudUpload className='text-foreground' size={17} onPress={() => router.push('/video')} />
                 <Text>Upload Image</Text>
               </Button>
             </CardContent>
@@ -95,7 +98,7 @@ export default function Screen() {
           </Card>
         </TabsContent>
       </Tabs>
-      {/* <Card>
+      <Card>
         <CardHeader>
           <CardTitle>Result </CardTitle>
         </CardHeader>
@@ -106,7 +109,7 @@ export default function Screen() {
           </View>
           <Textarea />
         </CardContent>
-      </Card> */}
+      </Card>
     </View>
   )
 }

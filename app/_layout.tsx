@@ -68,31 +68,16 @@ export default function RootLayout() {
       <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
       <Stack>
         <Stack.Screen
-          name='index'
+          name='(main)'
           options={{
             title: 'Translator',
             headerRight: () => <ThemeToggle />,
           }}
         />
         <Stack.Screen
-          name='history'
+          name='+not-found'
           options={{
-            title: 'Translator',
-            headerRight: () => <ThemeToggle />,
-          }}
-        />
-        <Stack.Screen
-          name='image'
-          options={{
-            title: 'Translator',
-            headerRight: () => <ThemeToggle />,
-          }}
-        />
-        <Stack.Screen
-          name='video'
-          options={{
-            title: 'Translator',
-            headerRight: () => <ThemeToggle />,
+            headerShown: false
           }}
         />
       </Stack>
