@@ -8,8 +8,10 @@ import * as ImagePicker from 'expo-image-picker';
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import { Repeat2 } from '~/lib/icons/Repeat2';
 import { useRef, useState } from 'react';
-import { Image } from 'react-native'
+import { Image } from 'expo-image'
 import { X } from '~/lib/icons/X';
+import { Trash } from '~/lib/icons/Trash';
+import { Check } from '~/lib/icons/Check';
 
 
 export default function ImageScreen() {
@@ -17,20 +19,17 @@ export default function ImageScreen() {
     const [isCameraOn, setIsCameraOn] = useState<boolean>(false)
     const [facing, setFacing] = useState<CameraType>('back');
     const [permission, requestPermission] = useCameraPermissions();
+    const [preview, setPreview] = useState<any>(null)
     const [photo, setPhoto] = useState<any>(null)
     const cameraRef = useRef<CameraView | null>(null)
 
-    if (!permission) {
-        return <View />;
+    const grantPermission = () => {
+        requestPermission()
+        setIsCameraOn(true)
     }
 
-    if (!permission.granted) {
-        return (
-            <View className='flex-1 justify-center'>
-                <Text className='pb-10'>We need your permission to show the camera</Text>
-                <Button onPress={requestPermission}>Grant Permission</Button>
-            </View>
-        );
+    if (!permission) {
+        return <View />;
     }
 
     function toggleCameraFacing() {
@@ -73,6 +72,7 @@ export default function ImageScreen() {
                 <CameraView
                     // className=''
                     ref={cameraRef}
+                    mode='picture'
                     style={styles.container}
                     facing={facing}
                 >
@@ -95,13 +95,21 @@ export default function ImageScreen() {
 
     if (photo) {
         return (
-            <View className='flex-1'>
+            <View className='relative flex-1'>
                 <Image
                     className='flex w-full h-full'
                     style={styles.image}
-                    source={photo.uri}
+                    source={{ uri: `data:image/jpeg;base64,${photo.base64}` }}
+                    contentFit='contain'
                 />
-                <Button onPress={() => setPhoto(null)}><Text>Delete</Text></Button>
+                <View className='absolute bottom-10 left-0 right-0 flex-row gap-1 items-center justify-center'>
+                    <Button variant={'ghost'} onPress={() => setPhoto(null)}>
+                        <Trash className='text-foreground' />
+                    </Button>
+                    <Button variant={'ghost'} onPress={() => setPhoto(null)}>
+                        <Check className='text-foreground' />
+                    </Button>
+                </View>
             </View>
         )
     }
@@ -113,7 +121,7 @@ export default function ImageScreen() {
                 <Button
                     className='flex-row gap-2 w-full'
                     variant={'outline'}
-                    onPress={() => setIsCameraOn(true)}
+                    onPress={!permission.granted ? grantPermission : () => setIsCameraOn(true)}
                 >
                     <Camera className='text-foreground' size={17} />
                     <Text>Take Image</Text>

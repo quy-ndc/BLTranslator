@@ -5,9 +5,7 @@ import { History } from '~/lib/icons/History';
 
 export default function TabLayout() {
     return (
-        <Tabs
-            
-        >
+        <Tabs>
             <Tabs.Screen
                 name="image"
                 options={{
