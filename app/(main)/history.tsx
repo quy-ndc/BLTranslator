@@ -63,14 +63,40 @@ export default function HistoryScreen() {
       createdDate: new Date(),
       active: true,
     },
+    {
+      id: 4,
+      title: "Image Record 3",
+      imageUrl: "image3.png",
+      size: "128MB",
+      result: "Boat",
+      onPress: function (): void {
+        throw new Error("Function not implemented.");
+      },
+      containerStyle: null,
+      createdDate: new Date(),
+      active: true,
+    },
+    {
+      id: 5,
+      title: "Image Record 3",
+      imageUrl: "image3.png",
+      size: "128MB",
+      result: "Boat",
+      onPress: function (): void {
+        throw new Error("Function not implemented.");
+      },
+      containerStyle: null,
+      createdDate: new Date(),
+      active: true,
+    },
   ];
 
   return (
-    <View className="flex-row w-full h-full">
+    <View className="flex-row w-full h-full p-6">
       <Tabs
         value={value}
         onValueChange={setValue}
-        className="w-full mx-auto flex-col gap-1.5"
+        className="w-full mx-auto flex-col gap-3"
       >
         <TabsList className="flex-row w-full">
           <TabsTrigger value="image" className="flex-1">
@@ -80,12 +106,10 @@ export default function HistoryScreen() {
             <Text>Video</Text>
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="image">
-        {recording.map((Rec) => (
-          <View className="flex-row gap-3"
-                key={Rec.id}
-          >
+        <TabsContent value="image" className="flex-col gap-3 items-center justify-center">
+          {recording.map((Rec) => (
             <ImageRecords
+              key={Rec.id}
               id={Rec.id}
               title={Rec.title}
               imageUrl={Rec.imageUrl}
@@ -96,8 +120,7 @@ export default function HistoryScreen() {
               createdDate={Rec.createdDate}
               active={Rec.active}
             />
-          </View>
-        ))}
+          ))}
         </TabsContent>
         <TabsContent value="video">
           <Card>

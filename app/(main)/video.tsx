@@ -12,6 +12,8 @@ import { X } from '~/lib/icons/X';
 import { Image } from 'react-native'
 import { Pause } from '~/lib/icons/Pause';
 import { Cctv } from 'lucide-react-native';
+import { VideoView, useVideoPlayer } from 'expo-video';
+import { useEvent } from 'expo';
 
 
 export default function VideoScreen() {
@@ -27,22 +29,18 @@ export default function VideoScreen() {
     const grantPermission = () => {
         requestPermission()
         requestMicrophonePermission()
+        setIsCameraOn(true)
     }
-        
-    if (!permission && !microphonePermission) {
-        return <View />;
-    }
-    
 
-    if (!permission?.granted && !microphonePermission?.granted) {
-        return (
-            <View className='flex-1 justify-center'>
-                <Text className='pb-10'>We need your permission to show the camera</Text>
-                <Button onPress={grantPermission}>
-                    <Text> Grant Permission</Text>
-                </Button>
-            </View>
-        );
+    const player = useVideoPlayer(video, player => {
+        player.loop = true;
+        player.play();
+    });
+
+    const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
+
+    if (!permission || !microphonePermission) {
+        return <View />;
     }
 
     function toggleCameraFacing() {
@@ -73,9 +71,9 @@ export default function VideoScreen() {
     }
 
     const pickVideoAsync = async () => {
-        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const mediaPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-        if (!permission.granted) {
+        if (!mediaPermission.granted) {
             alert('Permission to access media library is required!');
             return;
         }
@@ -96,6 +94,7 @@ export default function VideoScreen() {
             <View className='flex-1 w-full h-full'>
                 <CameraView
                     // className=''
+                    mode='video'
                     ref={cameraRef}
                     style={styles.container}
                     facing={facing}
@@ -128,13 +127,12 @@ export default function VideoScreen() {
 
     if (video) {
         return (
-            <View className='flex-1'>
-                <Image
-                    className='flex w-full h-full'
-                    style={styles.image}
-                    source={video.uri}
-                />
-                <Button onPress={() => setVideo(null)}><Text>Delete</Text></Button>
+            <View className='flex-1 p-10 items-center- justify-center h-full'>
+                <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
+                <View style={styles.controlsContainer}>
+                    {/* <Button onPress={() => { isPlaying ? player.pause() : player.play() }}><Text>{isPlaying ? 'Pause' : 'Play'}</Text></Button> */}
+                    <Button onPress={() => setVideo(null)}><Text>Delete</Text></Button>
+                </View>
             </View>
         )
     }
@@ -145,7 +143,7 @@ export default function VideoScreen() {
                 <Button
                     className='flex-row gap-2 w-full'
                     variant={'outline'}
-                    onPress={() => setIsCameraOn(true)}
+                    onPress={(!permission?.granted || !microphonePermission?.granted) ? grantPermission : () => setIsCameraOn(true)}
                 >
                     <Video className='text-foreground' size={17} />
                     <Text>Film Video</Text>
@@ -165,6 +163,20 @@ export default function VideoScreen() {
 
 
 const styles = StyleSheet.create({
+    contentContainer: {
+        flex: 1,
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 50,
+    },
+    video: {
+        width: 350,
+        height: 275,
+    },
+    controlsContainer: {
+        padding: 10,
+    },
     container: {
         flex: 1,
         justifyContent: 'center',

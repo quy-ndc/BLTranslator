@@ -39,12 +39,18 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow this app to use the camera.",
-          "microphonePermission": "Allow this app to use the microphone.",
-          "recordAudioAndroid": false
+          "cameraPermission": "Allow this app to access your camera",
+          "microphonePermission": "Allow this app to access your microphone",
+          "recordAudioAndroid": true
         }
       ],
-      "expo-video"
+      [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
