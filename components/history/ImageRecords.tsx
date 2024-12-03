@@ -1,9 +1,10 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from './ui/dialog';
-import { Button } from './ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '../ui/dialog';
+import { Button } from '../ui/button';
 import { TouchableOpacity, View } from 'react-native';
 import { Text } from '~/components/ui/text';
+import { StyleSheet } from 'react-native';
 import { Image } from 'expo-image'
 
 type Props = {
@@ -54,7 +55,14 @@ const ImageRecords: React.FC<Props> = ({
               <DialogDescription>
                 {result}
               </DialogDescription>
-              <Image source={"https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:quality(100)/2015_4_1_201504011527160987_game_Minecraft(1).jpg"} />
+              <View className='w-200 h-200'>
+                <Image
+                    style={styles.image}
+                    source={"https://picsum.photos/seed/696/3000/2000"}
+                    contentFit='contain'
+                />
+              </View> 
+              {/* <Image source={"https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:quality(100)/2015_4_1_201504011527160987_game_Minecraft(1).jpg"} /> */}
             </DialogHeader>
             <DialogFooter>
               <DialogClose asChild>
@@ -70,5 +78,41 @@ const ImageRecords: React.FC<Props> = ({
   }
   return null;
 }
+
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      justifyContent: 'center',
+
+  },
+  message: {
+      textAlign: 'center',
+      paddingBottom: 10,
+  },
+  camera: {
+      flex: 1,
+  },
+  buttonContainer: {
+      flex: 1,
+      flexDirection: 'row',
+      backgroundColor: 'transparent',
+      margin: 64,
+  },
+  button: {
+      flex: 1,
+      alignSelf: 'flex-end',
+      alignItems: 'center',
+  },
+  text: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: 'white',
+  },
+  image: {
+      flex: 1,
+      width: '50%',
+      backgroundColor: '#0553',
+  },
+});
 
 export default ImageRecords;

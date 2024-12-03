@@ -18,16 +18,18 @@ import { Loader } from "~/lib/icons/Loader";
 import { Progress } from "~/components/ui/progress";
 import { Textarea } from "~/components/ui/textarea";
 import { Text } from "~/components/ui/text";
-import ImageRecords from "~/components/ImageRecords";
+import ImageRecords from "~/components/history/ImageRecords";
+import VideoRecords from "~/components/history/VideoRecords";
 
 export default function HistoryScreen() {
   const [value, setValue] = React.useState("image");
 
-  const recording = [
+  const imageRecords = [
     {
       id: 1,
       title: "Image Record 1",
-      imageUrl: "https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:quality(100)/2015_4_1_201504011527160987_game_Minecraft(1).jpg",
+      imageUrl:
+        "https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:quality(100)/2015_4_1_201504011527160987_game_Minecraft(1).jpg",
       size: "16MB",
       result: "Thank you",
       onPress: function (): void {
@@ -65,8 +67,8 @@ export default function HistoryScreen() {
     },
     {
       id: 4,
-      title: "Image Record 3",
-      imageUrl: "image3.png",
+      title: "Image Record 4",
+      imageUrl: "image4.png",
       size: "128MB",
       result: "Boat",
       onPress: function (): void {
@@ -78,8 +80,76 @@ export default function HistoryScreen() {
     },
     {
       id: 5,
-      title: "Image Record 3",
-      imageUrl: "image3.png",
+      title: "Image Record 5",
+      imageUrl: "image5.png",
+      size: "128MB",
+      result: "Boat",
+      onPress: function (): void {
+        throw new Error("Function not implemented.");
+      },
+      containerStyle: null,
+      createdDate: new Date(),
+      active: true,
+    },
+  ];
+
+  const videoRecords = [
+    {
+      id: 1,
+      title: "Video Record 1",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      size: "128MB",
+      result: "Good morning to yall lady",
+      onPress: function (): void {
+        throw new Error("Function not implemented.");
+      },
+      containerStyle: null,
+      createdDate: new Date(),
+      active: true,
+    },
+    {
+      id: 2,
+      title: "Video Record 2",
+      videoUrl: "video2",
+      size: "258MB",
+      result: "Its mobius time",
+      onPress: function (): void {
+        throw new Error("Function not implemented.");
+      },
+      containerStyle: null,
+      createdDate: new Date(),
+      active: true,
+    },
+    {
+      id: 3,
+      title: "Video Record 3",
+      videoUrl: "video3",
+      size: "512MB",
+      result: "Boat",
+      onPress: function (): void {
+        throw new Error("Function not implemented.");
+      },
+      containerStyle: null,
+      createdDate: new Date(),
+      active: true,
+    },
+    {
+      id: 4,
+      title: "Video Record 4",
+      videoUrl: "video4",
+      size: "128MB",
+      result: "Boat",
+      onPress: function (): void {
+        throw new Error("Function not implemented.");
+      },
+      containerStyle: null,
+      createdDate: new Date(),
+      active: true,
+    },
+    {
+      id: 5,
+      title: "Video Record 5",
+      videoUrl: "video5",
       size: "128MB",
       result: "Boat",
       onPress: function (): void {
@@ -106,8 +176,11 @@ export default function HistoryScreen() {
             <Text>Video</Text>
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="image" className="flex-col gap-3 items-center justify-center">
-          {recording.map((Rec) => (
+        <TabsContent
+          value="image"
+          className="flex-col gap-3 items-center justify-center"
+        >
+          {imageRecords.map((Rec) => (
             <ImageRecords
               key={Rec.id}
               id={Rec.id}
@@ -122,16 +195,24 @@ export default function HistoryScreen() {
             />
           ))}
         </TabsContent>
-        <TabsContent value="video">
-          <Card>
-            <CardHeader>
-              <CardTitle>Video recordings</CardTitle>
-              <CardDescription>
-                Give body language gestures from videos a meaning
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex-row justify-between gap-2 native:gap-2"></CardContent>
-          </Card>
+        <TabsContent
+          value="video"
+          className="flex-col gap-3 items-center justify-center"
+        >
+          {videoRecords.map((Rec) => (
+            <VideoRecords
+              key={Rec.id}
+              id={Rec.id}
+              title={Rec.title}
+              videoUrl={Rec.videoUrl}
+              size={Rec.size}
+              result={Rec.result}
+              onPress={Rec.onPress}
+              containerStyle={{ marginBottom: 14, paddingHorizontal: 20 }}
+              createdDate={Rec.createdDate}
+              active={Rec.active}
+            />
+          ))}
         </TabsContent>
       </Tabs>
     </View>
