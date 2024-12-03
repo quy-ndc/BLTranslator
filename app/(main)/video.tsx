@@ -9,11 +9,12 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRef, useState } from 'react';
 import { Repeat2 } from '~/lib/icons/Repeat2';
 import { X } from '~/lib/icons/X';
-import { Image } from 'react-native'
 import { Pause } from '~/lib/icons/Pause';
+import { Trash } from '~/lib/icons/Trash';
+import { Check } from '~/lib/icons/Check';
 import { Cctv } from 'lucide-react-native';
 import { VideoView, useVideoPlayer } from 'expo-video';
-import { useEvent } from 'expo';
+import { UploadToCloudinary } from '~/service/cloudinary-api';
 
 
 export default function VideoScreen() {
@@ -22,9 +23,11 @@ export default function VideoScreen() {
     const [facing, setFacing] = useState<CameraType>('back');
     const [permission, requestPermission] = useCameraPermissions();
     const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions()
+    const [preview, setPreview] = useState<any>(null)
     const [video, setVideo] = useState<any>(null)
     const [isRecording, setIsRecording] = useState(false)
     const cameraRef = useRef<CameraView | null>(null)
+    const [loading, setLoading] = useState(false)
 
     const grantPermission = () => {
         requestPermission()
@@ -32,12 +35,10 @@ export default function VideoScreen() {
         setIsCameraOn(true)
     }
 
-    const player = useVideoPlayer(video, player => {
+    const previewPlayer = useVideoPlayer(preview, player => {
         player.loop = true;
         player.play();
     });
-
-    const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
 
     if (!permission || !microphonePermission) {
         return <View />;
@@ -47,6 +48,11 @@ export default function VideoScreen() {
         setFacing(current => (current === 'back' ? 'front' : 'back'));
     }
 
+    const clear = () => {
+        setPreview(null)
+        setVideo(null)
+    }
+
     // console.log('video', video)
 
     const handleRecordVideo = async () => {
@@ -54,7 +60,7 @@ export default function VideoScreen() {
             try {
                 setIsRecording(true);
                 const videoData = await cameraRef.current.recordAsync({});
-                setVideo(videoData);
+                setPreview(videoData);
             } catch (error) {
                 console.error("Error while recording video: ", error);
             } finally {
@@ -89,7 +95,32 @@ export default function VideoScreen() {
         }
     };
 
-    if (isCameraOn && !video) {
+    const handleUploadImage = async () => {
+        setLoading(true)
+        setVideo(preview)
+        const data = new FormData()
+        const file: any = {
+            uri: preview.uri || '',
+            name: 'upload.mp4',
+            type: 'video/mp4'
+        }
+        data.append('file', file as File)
+        data.append('upload_preset', process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET as string)
+
+        const res = await UploadToCloudinary(data)
+        console.log(res)
+        if (res) {
+            if (res.success) {
+                setPreview(null)
+            }
+            console.log(res.data.url)
+            setLoading(false)
+        }
+    }
+
+    console.log('video', preview)
+
+    if (isCameraOn && !video && !preview) {
         return (
             <View className='flex-1 w-full h-full'>
                 <CameraView
@@ -123,15 +154,17 @@ export default function VideoScreen() {
         )
     }
 
-    console.log(video)
-
-    if (video) {
+    if (preview) {
         return (
-            <View className='flex-1 p-10 items-center- justify-center h-full'>
-                <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
-                <View style={styles.controlsContainer}>
-                    {/* <Button onPress={() => { isPlaying ? player.pause() : player.play() }}><Text>{isPlaying ? 'Pause' : 'Play'}</Text></Button> */}
-                    <Button onPress={() => setVideo(null)}><Text>Delete</Text></Button>
+            <View className='relative flex-1 p-0 items-center- justify-center h-full'>
+                <VideoView style={styles.video} player={previewPlayer} contentFit='contain' allowsFullscreen allowsPictureInPicture />
+                <View className='absolute bottom-0 left-0 right-0 flex-row gap-1 items-center justify-center'>
+                    <Button variant={'ghost'} onPress={() => setPreview(null)}>
+                        <Trash className='text-foreground' />
+                    </Button>
+                    <Button variant={'ghost'} onPress={handleUploadImage}>
+                        <Check className='text-foreground' />
+                    </Button>
                 </View>
             </View>
         )
@@ -156,6 +189,14 @@ export default function VideoScreen() {
                     <Clapperboard className='text-foreground' size={17} />
                     <Text>Upload Vidqeo</Text>
                 </Button>
+                <Button
+                    className='flex-row gap-2 w-full'
+                    variant={'outline'}
+                    onPress={clear}
+                >
+                    <Clapperboard className='text-foreground' size={17} />
+                    <Text>Upload Vidqeo</Text>
+                </Button>
             </View>
         </View>
     )
@@ -171,11 +212,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 50,
     },
     video: {
-        width: 350,
-        height: 275,
-    },
-    controlsContainer: {
-        padding: 10,
+        width: '100%',
+        height: '100%',
     },
     container: {
         flex: 1,
