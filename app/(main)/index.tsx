@@ -72,7 +72,7 @@ export default function Screen() {
               </Button>
               <Button className='flex-row gap-2 w-1/2' variant={'outline'}>
                 <CloudUpload className='text-foreground' size={17} onPress={() => router.push('/video')} />
-                <Text>Upload Image</Text>
+                <Text>Upload Imae</Text>
               </Button>
             </CardContent>
           </Card>

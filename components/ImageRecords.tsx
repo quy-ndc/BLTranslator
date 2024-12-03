@@ -49,13 +49,13 @@ const ImageRecords: React.FC<Props> = ({
             </TouchableOpacity>
           </DialogTrigger>
           <DialogContent className='flex'>
-            {/* <DialogHeader>
+            <DialogHeader>
               <DialogTitle>{title}</DialogTitle>
               <DialogDescription>
                 {result}
               </DialogDescription>
               <Image source={"https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:quality(100)/2015_4_1_201504011527160987_game_Minecraft(1).jpg"} />
-            </DialogHeader> */}
+            </DialogHeader>
             <DialogFooter>
               <DialogClose asChild>
                 <Button>
