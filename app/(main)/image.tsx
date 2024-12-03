@@ -97,9 +97,11 @@ export default function ImageScreen() {
         return (
             <View className='relative flex-1'>
                 <Image
-                    className='flex w-full h-full'
+                    // className='flex w-full h-full'
                     style={styles.image}
-                    source={{ uri: `data:image/jpeg;base64,${photo.base64}` }}
+                    // source={{ uri: `data:image/jpeg;base64,${photo.base64}` }}
+                    source={"https://picsum.photos/seed/696/3000/2000"}
+                    
                     contentFit='contain'
                 />
                 <View className='absolute bottom-10 left-0 right-0 flex-row gap-1 items-center justify-center'>
