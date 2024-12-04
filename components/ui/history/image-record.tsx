@@ -1,17 +1,16 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../card';
 import { TouchableOpacity, View, ToastAndroid } from 'react-native';
 import { formatDate } from '~/utils/format-date';
 import { useRouter } from 'expo-router';
-import { Button } from './ui/button';
+import { Button } from '../button';
 import { Trash } from '~/lib/icons/Trash';
 import { Copy } from '~/lib/icons/Copy';
 import * as Clipboard from 'expo-clipboard';
 import { useDispatch } from 'react-redux';
 import { removeImageRecord } from '~/store/slice/image-slice';
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from './ui/alert-dialog';
-import { Text } from './ui/text'
-import { removeVideoRecord } from '~/store/slice/video-slice';
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '../alert-dialog';
+import { Text } from '../text'
 
 type Props = {
   id: string
@@ -20,14 +19,14 @@ type Props = {
   createdAt: string
 };
 
-const VideoRecord: React.FC<Props> = ({ id, url, translation, createdAt }) => {
+const ImageRecord: React.FC<Props> = ({ id, url, translation, createdAt }) => {
 
   const router = useRouter()
   const dispatch = useDispatch()
 
   const handleRecordClick = () => {
     router.push({
-      pathname: '/video-record',
+      pathname: '/image-record',
       params: {
         id: id,
         url: url,
@@ -42,12 +41,12 @@ const VideoRecord: React.FC<Props> = ({ id, url, translation, createdAt }) => {
   }
 
   const handleDelete = () => {
-    dispatch(removeVideoRecord(id))
+    dispatch(removeImageRecord(id))
     ToastAndroid.show('Deleted from memory', ToastAndroid.SHORT)
   }
 
   return (
-    <TouchableOpacity onPress={handleRecordClick}>
+    <TouchableOpacity onPress={handleRecordClick} className='mb-3'>
       <Card>
         <CardHeader>
           <CardTitle>Translation on {formatDate(createdAt)}</CardTitle>
@@ -96,4 +95,4 @@ const VideoRecord: React.FC<Props> = ({ id, url, translation, createdAt }) => {
   );
 }
 
-export default VideoRecord
+export default ImageRecord

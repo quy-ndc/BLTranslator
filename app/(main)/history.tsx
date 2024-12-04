@@ -10,10 +10,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { View, ScrollView } from "react-native";
 import { Text } from "~/components/ui/text";
-import ImageRecord from "~/components/image-record";
+import ImageRecord from "~/components/ui/history/image-record";
 import { useSelector } from 'react-redux';
 import { RootState } from '~/store/store';
-import VideoRecord from "~/components/video-record";
+import VideoRecord from "~/components/ui/history/video-record";
 
 
 export default function HistoryScreen() {
