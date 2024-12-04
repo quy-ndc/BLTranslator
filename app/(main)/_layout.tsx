@@ -13,7 +13,8 @@ export default function TabLayout() {
                     tabBarIcon: ({ color, size }) => (
                         <Image color={color} size={size} />
                     ),
-                    headerShown: false
+                    headerShown: false,
+                    animation: 'shift'
                 }}
             />
             <Tabs.Screen
@@ -27,7 +28,8 @@ export default function TabLayout() {
                     tabBarIcon: ({ color, size }) => (
                         <Video color={color} size={size} />
                     ),
-                    headerShown: false
+                    headerShown: false,
+                    animation: 'shift'
                 }} />
             <Tabs.Screen
                 name="history"
@@ -36,7 +38,8 @@ export default function TabLayout() {
                     tabBarIcon: ({ color, size }) => (
                         <History color={color} size={size} />
                     ),
-                    headerShown: false
+                    headerShown: false,
+                    animation: 'shift'
                 }}
             />
         </Tabs>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Text } from '~/components/ui/text';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ToastAndroid } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Video } from '~/lib/icons/Video';
 import { Clapperboard } from '~/lib/icons/Clapperboard';
@@ -15,6 +15,9 @@ import { Check } from '~/lib/icons/Check';
 import { Cctv } from 'lucide-react-native';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { UploadToCloudinary } from '~/service/cloudinary-api';
+import { useDispatch } from 'react-redux';
+import { addVideoRecord } from '~/store/slice/video-slice';
+import { Loader } from '~/lib/icons/Loader';
 
 
 export default function VideoScreen() {
@@ -29,6 +32,8 @@ export default function VideoScreen() {
     const cameraRef = useRef<CameraView | null>(null)
     const [loading, setLoading] = useState(false)
 
+    const dispatch = useDispatch()
+
     const grantPermission = () => {
         requestPermission()
         requestMicrophonePermission()
@@ -39,6 +44,11 @@ export default function VideoScreen() {
         player.loop = true;
         player.play();
     });
+
+    const videoPlayer = useVideoPlayer(video, player => {
+        player.loop = true;
+        player.play();
+    })
 
     if (!permission || !microphonePermission) {
         return <View />;
@@ -52,8 +62,6 @@ export default function VideoScreen() {
         setPreview(null)
         setVideo(null)
     }
-
-    // console.log('video', video)
 
     const handleRecordVideo = async () => {
         if (cameraRef.current) {
@@ -91,30 +99,34 @@ export default function VideoScreen() {
         });
 
         if (!result.canceled) {
-            console.log(result);
+            setPreview(result.assets[0])
         }
     };
 
-    const handleUploadImage = async () => {
+    const handleUploadVideo = async () => {
         setLoading(true)
-        setVideo(preview)
         const data = new FormData()
         const file: any = {
             uri: preview.uri || '',
-            name: 'upload.mp4',
-            type: 'video/mp4'
+            name: preview.fileName || 'upload.mp4',
+            type: preview.mimeType || 'video/mp4'
         }
         data.append('file', file as File)
         data.append('upload_preset', process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET as string)
 
         const res = await UploadToCloudinary(data)
-        console.log(res)
         if (res) {
+            setLoading(false)
             if (res.success) {
+                setVideo(res.data.url)
                 setPreview(null)
+                ToastAndroid.show('Upload successful', ToastAndroid.SHORT)
+                dispatch(addVideoRecord({ url: res.data.url as string, translation: 'aaaa' }))
+            } else {
+                alert('Failed to use video please try again');
+
             }
             console.log(res.data.url)
-            setLoading(false)
         }
     }
 
@@ -156,14 +168,40 @@ export default function VideoScreen() {
 
     if (preview) {
         return (
-            <View className='relative flex-1 p-0 items-center- justify-center h-full'>
+            <View className='relative flex-1 p-0 items-center justify-center h-full'>
                 <VideoView style={styles.video} player={previewPlayer} contentFit='contain' allowsFullscreen allowsPictureInPicture />
-                <View className='absolute bottom-0 left-0 right-0 flex-row gap-1 items-center justify-center'>
-                    <Button variant={'ghost'} onPress={() => setPreview(null)}>
-                        <Trash className='text-foreground' />
+                <View className='absolute bottom-5 left-0 right-0 flex-row gap-1 items-center justify-center'>
+                    <Button variant={'ghost'} disabled={loading} onPress={() => setPreview(null)}>
+                        {loading ? (
+                            <Loader className='text-foreground' />
+                        ) : (
+                            <Trash className='text-foreground' />
+                        )}
                     </Button>
-                    <Button variant={'ghost'} onPress={handleUploadImage}>
-                        <Check className='text-foreground' />
+                    <Button variant={'ghost'} disabled={loading} onPress={handleUploadVideo}>
+                        {loading ? (
+                            <Loader className='text-foreground' />
+                        ) : (
+                            <Check className='text-foreground' />
+                        )}
+                    </Button>
+                </View>
+            </View>
+        )
+    }
+
+    if (video) {
+        return (
+            <View className='relative flex-1 gap-2'>
+                <VideoView style={styles.video} player={videoPlayer} contentFit='contain' allowsFullscreen allowsPictureInPicture />
+                <View className='pl-5 pr-5 pt-5 pb-10'>
+                    <Button
+                        className='flex-row gap-2 w-full'
+                        variant={'outline'}
+                        onPress={clear}
+                    >
+                        <Clapperboard className='text-foreground' size={17} />
+                        <Text>Clear</Text>
                     </Button>
                 </View>
             </View>
@@ -187,15 +225,7 @@ export default function VideoScreen() {
                     onPress={pickVideoAsync}
                 >
                     <Clapperboard className='text-foreground' size={17} />
-                    <Text>Upload Vidqeo</Text>
-                </Button>
-                <Button
-                    className='flex-row gap-2 w-full'
-                    variant={'outline'}
-                    onPress={clear}
-                >
-                    <Clapperboard className='text-foreground' size={17} />
-                    <Text>Upload Vidqeo</Text>
+                    <Text>Upload Video</Text>
                 </Button>
             </View>
         </View>
@@ -204,48 +234,13 @@ export default function VideoScreen() {
 
 
 const styles = StyleSheet.create({
-    contentContainer: {
-        flex: 1,
-        padding: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 50,
-    },
     video: {
+        flex: 1,
         width: '100%',
         height: '100%',
     },
     container: {
         flex: 1,
         justifyContent: 'center',
-
-    },
-    message: {
-        textAlign: 'center',
-        paddingBottom: 10,
-    },
-    camera: {
-        flex: 1,
-    },
-    buttonContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        backgroundColor: 'transparent',
-        margin: 64,
-    },
-    button: {
-        flex: 1,
-        alignSelf: 'flex-end',
-        alignItems: 'center',
-    },
-    text: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    image: {
-        flex: 1,
-        width: '100%',
-        backgroundColor: '#0553',
     },
 });

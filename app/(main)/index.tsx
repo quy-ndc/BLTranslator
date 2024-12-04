@@ -104,7 +104,7 @@ export default function Screen() {
         </CardHeader>
         <CardContent className='flex-column gap-5 '>
           <View className='flex-row gap-2 justify-between items-center'>
-            <Loader color={'black'} className='text-foreground' size={18} />
+            <Loader className='text-foreground' size={18} />
             <Progress className='w-5/6' value={progress} />
           </View>
           <Textarea />

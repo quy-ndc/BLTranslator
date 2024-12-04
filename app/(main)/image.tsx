@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ToastAndroid } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { Camera } from '~/lib/icons/Camera';
 import { CloudUpload } from '~/lib/icons/CloudUpload';
 import * as ImagePicker from 'expo-image-picker';
-import { CameraCapturedPicture, CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import { Repeat2 } from '~/lib/icons/Repeat2';
 import { useRef, useState } from 'react';
 import { Image } from 'expo-image'
@@ -13,7 +13,9 @@ import { X } from '~/lib/icons/X';
 import { Trash } from '~/lib/icons/Trash';
 import { Check } from '~/lib/icons/Check';
 import { UploadToCloudinary } from '~/service/cloudinary-api';
-
+import { useDispatch } from 'react-redux';
+import { addImageRecord } from '~/store/slice/image-slice';
+import { Loader } from '~/lib/icons/Loader';
 
 export default function ImageScreen() {
 
@@ -24,7 +26,8 @@ export default function ImageScreen() {
     const [photo, setPhoto] = useState<any>(null)
     const cameraRef = useRef<CameraView | null>(null)
     const [loading, setLoading] = useState(false)
-    const [url, setUrl] = useState('')
+
+    const dispatch = useDispatch()
 
     const blurhash =
         '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
@@ -51,13 +54,7 @@ export default function ImageScreen() {
                 imageType: 'jpg'
             })
             setPreview(takenPhoto!)
-            // setPhoto(takenPhoto!)
         }
-    }
-
-    const handleConfirmPhoto = () => {
-        setPhoto(preview)
-        setPreview(null)
     }
 
     const handleClear = () => {
@@ -86,30 +83,32 @@ export default function ImageScreen() {
 
     const handleUploadImage = async () => {
         setLoading(true)
-        setPhoto(preview)
         const data = new FormData()
         const file: any = {
-            uri: preview.uri || ' ',
+            uri: preview.uri || '',
             name: preview.fileName || 'upload.jpeg',
             type: preview.mimeType || 'image/jpeg'
         }
-        // preview.base64 ? `data:image/jpeg;base64,${preview!.base64}` :
         data.append('file', file as File)
         data.append('upload_preset', process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET as string)
 
         const res = await UploadToCloudinary(data)
-        console.log(res)
         if (res) {
             setLoading(false)
             if (res.success) {
-                setUrl(res.data.url)
+                setPhoto(res.data.url)
                 setPreview(null)
+                ToastAndroid.show('Upload successful', ToastAndroid.SHORT)
+                dispatch(addImageRecord({ url: res.data.url as string, translation: 'aaaa' }))
+            } else {
+                alert('Failed to use image please try again');
             }
             console.log(res.data.url)
         }
     }
 
-    console.log(preview)
+    console.log('preview', preview)
+    console.log('photo', photo)
 
     if (isCameraOn && !photo && !preview) {
         return (
@@ -148,11 +147,19 @@ export default function ImageScreen() {
                     contentFit='contain'
                 />
                 <View className='absolute bottom-10 left-0 right-0 flex-row gap-1 items-center justify-center'>
-                    <Button variant={'ghost'} onPress={() => setPreview(null)}>
-                        <Trash className='text-foreground' />
+                    <Button variant={'ghost'} disabled={loading} onPress={() => setPreview(null)}>
+                        {loading ? (
+                            <Loader className='text-foreground' />
+                        ) : (
+                            <Trash className='text-foreground' />
+                        )}
                     </Button>
-                    <Button variant={'ghost'} onPress={handleUploadImage}>
-                        <Check className='text-foreground' />
+                    <Button variant={'ghost'} disabled={loading} onPress={handleUploadImage}>
+                        {loading ? (
+                            <Loader className='text-foreground' />
+                        ) : (
+                            <Check className='text-foreground' />
+                        )}
                     </Button>
                 </View>
             </View>
@@ -161,21 +168,23 @@ export default function ImageScreen() {
 
     if (photo) {
         return (
-            <View className='relative flex-1 gap-2 pl-10 pr-10 pt-6'>
+            <View className='relative flex-1 gap-2'>
                 <Image
                     style={styles.image}
                     placeholder={blurhash}
                     source={photo.uri}
-                    contentFit='cover'
+                    contentFit='contain'
                 />
-                <Button
-                    className='flex-row gap-2 w-full'
-                    variant={'outline'}
-                    onPress={handleClear}
-                >
-                    <CloudUpload className='text-foreground' size={17} />
-                    <Text>{url}</Text>
-                </Button>
+                <View className='pl-5 pr-5 pt-5 pb-10'>
+                    <Button
+                        className='flex-row gap-2 w-full'
+                        variant={'outline'}
+                        onPress={handleClear}
+                    >
+                        <CloudUpload className='text-foreground' size={17} />
+                        <Text>Clear</Text>
+                    </Button>
+                </View>
             </View>
         )
     }
@@ -199,14 +208,6 @@ export default function ImageScreen() {
                     <CloudUpload className='text-foreground' size={17} />
                     <Text>Upload Image</Text>
                 </Button>
-                {/* <Button
-                    className='flex-row gap-2 w-full'
-                    variant={'outline'}
-                    onPress={handleClear}
-                >
-                    <CloudUpload className='text-foreground' size={17} />
-                    <Text>Clear</Text>
-                </Button> */}
             </View>
         </View>
     )
@@ -216,34 +217,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-
-    },
-    message: {
-        textAlign: 'center',
-        paddingBottom: 10,
-    },
-    camera: {
-        flex: 1,
-    },
-    buttonContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        backgroundColor: 'transparent',
-        margin: 64,
-    },
-    button: {
-        flex: 1,
-        alignSelf: 'flex-end',
-        alignItems: 'center',
-    },
-    text: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: 'white',
     },
     image: {
         flex: 1,
         width: '100%',
-        backgroundColor: '#0553',
+        height: 'auto'
     },
 });

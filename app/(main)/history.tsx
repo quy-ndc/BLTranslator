@@ -8,88 +8,20 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { View, StyleSheet, Button } from "react-native";
-import { CloudUpload } from "~/lib/icons/CloudUpload";
-import { Clapperboard } from "~/lib/icons/Clapperboard";
-import { Camera } from "~/lib/icons/Camera";
-import { Video } from "~/lib/icons/Video";
-import { useRouter } from "expo-router";
-import { Loader } from "~/lib/icons/Loader";
-import { Progress } from "~/components/ui/progress";
-import { Textarea } from "~/components/ui/textarea";
+import { View, ScrollView } from "react-native";
 import { Text } from "~/components/ui/text";
-import ImageRecords from "~/components/ImageRecords";
+import ImageRecord from "~/components/image-record";
+import { useSelector } from 'react-redux';
+import { RootState } from '~/store/store';
+import VideoRecord from "~/components/video-record";
+
 
 export default function HistoryScreen() {
-  const [value, setValue] = React.useState("image");
 
-  const recording = [
-    {
-      id: 1,
-      title: "Image Record 1",
-      imageUrl: "https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:quality(100)/2015_4_1_201504011527160987_game_Minecraft(1).jpg",
-      size: "16MB",
-      result: "Thank you",
-      onPress: function (): void {
-        throw new Error("Function not implemented.");
-      },
-      containerStyle: null,
-      createdDate: new Date(),
-      active: true,
-    },
-    {
-      id: 2,
-      title: "Image Record 2",
-      imageUrl: "image2.png",
-      size: "32MB",
-      result: "Hello",
-      onPress: function (): void {
-        throw new Error("Function not implemented.");
-      },
-      containerStyle: null,
-      createdDate: new Date(),
-      active: true,
-    },
-    {
-      id: 3,
-      title: "Image Record 3",
-      imageUrl: "image3.png",
-      size: "128MB",
-      result: "Boat",
-      onPress: function (): void {
-        throw new Error("Function not implemented.");
-      },
-      containerStyle: null,
-      createdDate: new Date(),
-      active: true,
-    },
-    {
-      id: 4,
-      title: "Image Record 3",
-      imageUrl: "image3.png",
-      size: "128MB",
-      result: "Boat",
-      onPress: function (): void {
-        throw new Error("Function not implemented.");
-      },
-      containerStyle: null,
-      createdDate: new Date(),
-      active: true,
-    },
-    {
-      id: 5,
-      title: "Image Record 3",
-      imageUrl: "image3.png",
-      size: "128MB",
-      result: "Boat",
-      onPress: function (): void {
-        throw new Error("Function not implemented.");
-      },
-      containerStyle: null,
-      createdDate: new Date(),
-      active: true,
-    },
-  ];
+  const imageRecords = useSelector((state: RootState) => state.imageRecordSlice)
+  const videoRecords = useSelector((state: RootState) => state.videoReordSlice)
+
+  const [value, setValue] = React.useState("image");
 
   return (
     <View className="flex-row w-full h-full p-6">
@@ -107,31 +39,30 @@ export default function HistoryScreen() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="image" className="flex-col gap-3 items-center justify-center">
-          {recording.map((Rec) => (
-            <ImageRecords
-              key={Rec.id}
-              id={Rec.id}
-              title={Rec.title}
-              imageUrl={Rec.imageUrl}
-              size={Rec.size}
-              result={Rec.result}
-              onPress={Rec.onPress}
-              containerStyle={{ marginBottom: 14, paddingHorizontal: 20 }}
-              createdDate={Rec.createdDate}
-              active={Rec.active}
-            />
-          ))}
+          <ScrollView className="pt-3 pb-3">
+            {imageRecords.map((rec) => (
+              <ImageRecord
+                key={rec.id}
+                id={rec.id}
+                translation={rec.translation}
+                url={rec.url}
+                createdAt={rec.createdAt}
+              />
+            ))}
+          </ScrollView>
         </TabsContent>
         <TabsContent value="video">
-          <Card>
-            <CardHeader>
-              <CardTitle>Video recordings</CardTitle>
-              <CardDescription>
-                Give body language gestures from videos a meaning
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex-row justify-between gap-2 native:gap-2"></CardContent>
-          </Card>
+          <ScrollView className="pt-3 pb-3">
+            {videoRecords.map((rec) => (
+              <VideoRecord
+                key={rec.id}
+                id={rec.id}
+                translation={rec.translation}
+                url={rec.url}
+                createdAt={rec.createdAt}
+              />
+            ))}
+          </ScrollView>
         </TabsContent>
       </Tabs>
     </View>
