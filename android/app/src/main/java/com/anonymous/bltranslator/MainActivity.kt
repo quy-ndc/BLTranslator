@@ -1,4 +1,4 @@
-package com.anonymous.starterbase
+package com.anonymous.bltranslator
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

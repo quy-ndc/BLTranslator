@@ -1,16 +1,19 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { TouchableOpacity, View, ToastAndroid } from 'react-native';
 import { formatDate } from '~/utils/format-date';
 import { useRouter } from 'expo-router';
-import { Button } from '../button';
+import { Button } from '../ui/button';
 import { Trash } from '~/lib/icons/Trash';
 import { Copy } from '~/lib/icons/Copy';
 import * as Clipboard from 'expo-clipboard';
 import { useDispatch } from 'react-redux';
 import { removeImageRecord } from '~/store/slice/image-slice';
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '../alert-dialog';
-import { Text } from '../text'
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '../ui/alert-dialog';
+import { Text } from '../ui/text'
+import { Headphones } from '~/lib/icons/Headphones';
+import * as Speech from 'expo-speech'
+
 
 type Props = {
   id: string
@@ -31,13 +34,16 @@ const ImageRecord: React.FC<Props> = ({ id, url, translation, createdAt }) => {
         id: id,
         url: url,
         translation: translation,
-        createdAt: createdAt,
       }
     })
   }
 
   const handleCopy = async () => {
     await Clipboard.setStringAsync(translation);
+  }
+
+  const handleRead = () => {
+    Speech.speak(translation)
   }
 
   const handleDelete = () => {
@@ -58,11 +64,11 @@ const ImageRecord: React.FC<Props> = ({ id, url, translation, createdAt }) => {
           <View className='flex-row w-full align-center justify-between'>
             <View />
             <View className='flex-row'>
-              <Button
-                variant={'ghost'}
-                onPress={handleCopy}
-              >
+              <Button variant={'ghost'} onPress={handleCopy}>
                 <Copy className='text-foreground' size={17} />
+              </Button>
+              <Button variant={'ghost'} onPress={handleRead}>
+                <Headphones className='text-foreground' size={17} />
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>

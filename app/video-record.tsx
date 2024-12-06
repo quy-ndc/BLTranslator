@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, ScrollView, Dimensions, View } from 'react-native';
-import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Button } from '~/components/ui/button';
 import { Textarea } from '~/components/ui/textarea';
@@ -18,10 +17,7 @@ export default function VideoRecordScreen() {
     const router = useRouter()
     const dispatch = useDispatch()
 
-    const { id, url, translation, createdAt } = useLocalSearchParams();
-
-    const blurhash =
-        '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
+    const { id, url, translation } = useLocalSearchParams();
 
     const handleDelete = () => {
         router.back()
@@ -58,9 +54,7 @@ export default function VideoRecordScreen() {
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the translation
-                            </AlertDialogDescription>
+                            <AlertDialogDescription>This action cannot be undone. This will permanently delete the translation</AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel>

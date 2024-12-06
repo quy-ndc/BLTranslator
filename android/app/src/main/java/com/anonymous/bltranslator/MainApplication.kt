@@ -1,4 +1,4 @@
-package com.anonymous.starterbase
+package com.anonymous.bltranslator
 
 import android.app.Application
 import android.content.res.Configuration

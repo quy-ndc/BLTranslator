@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Starter Base",
-    "slug": "starter-base",
+    "name": "BL Translator",
+    "slug": "bl-translator",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -23,11 +23,12 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.starterbase",
+      "package": "com.anonymous.bltranslator",
       "permissions": [
-        "RECORD_AUDIO",
-        "CAMERA"
-      ]
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA"
+      ],
+      "jsEngine": "hermes"
     },
     "web": {
       "bundler": "metro",
@@ -60,6 +61,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "50f949d8-ccbf-48ef-bae5-504f335e4cca"
+      }
     }
   }
 }
