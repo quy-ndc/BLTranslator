@@ -32,7 +32,7 @@ export default function ImageRecordScreen() {
             <Image
                 style={styles.image}
                 placeholder={blurhash}
-                source={url}
+                source={'https://fastly.picsum.photos/id/931/3000/2000.jpg?hmac=jCGUNVvmitTF0RmikgMPadC8ulo38D6ZtPt6caK_aHw'}
                 contentFit='contain'
             />
             <View className='pl-5 pr-5'>

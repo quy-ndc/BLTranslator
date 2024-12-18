@@ -17,10 +17,10 @@ export default function TabLayout() {
                     animation: 'shift'
                 }}
             />
-            <Tabs.Screen
+            {/* <Tabs.Screen
                 name="index"
                 options={{}}
-            />
+            /> */}
             <Tabs.Screen
                 name="video"
                 options={{
