@@ -15,12 +15,8 @@ This React Native project is designed to help users translate text from images a
 ---
 
 ## Technology Stack
-- **Frontend**: React Native (JavaScript/TypeScript)
-- **OCR**: Tesseract.js or Google Vision API
-- **Translation**: Google Translate API or Microsoft Translator Text API
-- **State Management**: Redux or Context API
-- **Navigation**: React Navigation
-- **Backend (Optional)**: Node.js/Express.js (for advanced processing)
+Framework: React-native , expo
+Library UI: rnr(react-native-reusables), redux, native-wind
 
 ---
 
