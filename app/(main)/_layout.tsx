@@ -7,7 +7,7 @@ export default function TabLayout() {
     return (
         <Tabs>
             <Tabs.Screen
-                name="image"
+                name="index"
                 options={{
                     title: 'Image',
                     tabBarIcon: ({ color, size }) => (
@@ -17,10 +17,6 @@ export default function TabLayout() {
                     animation: 'shift'
                 }}
             />
-            {/* <Tabs.Screen
-                name="index"
-                options={{}}
-            /> */}
             <Tabs.Screen
                 name="video"
                 options={{
