@@ -9,15 +9,15 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: 'Image',
+                    title: 'Record',
                     tabBarIcon: ({ color, size }) => (
-                        <Image color={color} size={size} />
+                        <Video color={color} size={size} />
                     ),
                     headerShown: false,
                     animation: 'shift'
                 }}
             />
-            <Tabs.Screen
+            {/* <Tabs.Screen
                 name="video"
                 options={{
                     title: 'Video',
@@ -26,7 +26,7 @@ export default function TabLayout() {
                     ),
                     headerShown: false,
                     animation: 'shift'
-                }} />
+                }} /> */}
             <Tabs.Screen
                 name="history"
                 options={{
