@@ -13,6 +13,7 @@
     "postinstall": "npx tailwindcss -i ./global.css -o ./node_modules/.cache/nativewind/global.css"
   },
   "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-navigation/native": "^7.0.0",
     "@reduxjs/toolkit": "^2.4.0",
@@ -32,6 +33,7 @@
     "expo": "~52.0.17",
     "expo-camera": "~16.0.8",
     "expo-clipboard": "^7.0.0",
+    "expo-crypto": "~14.0.1",
     "expo-image": "~2.0.3",
     "expo-image-picker": "~16.0.3",
     "expo-linking": "~7.0.2",
@@ -53,7 +55,6 @@
     "react-native-svg": "15.8.0",
     "react-native-web": "~0.19.13",
     "react-redux": "^9.1.2",
-    "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss": "3.3.5",

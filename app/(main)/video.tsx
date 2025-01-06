@@ -6,7 +6,7 @@ import { Video } from '~/lib/icons/Video';
 import { Clapperboard } from '~/lib/icons/Clapperboard';
 import { CameraView, CameraType, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Repeat2 } from '~/lib/icons/Repeat2';
 import { X } from '~/lib/icons/X';
 import { Pause } from '~/lib/icons/Pause';
@@ -15,9 +15,15 @@ import { Check } from '~/lib/icons/Check';
 import { Cctv } from 'lucide-react-native';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { UploadToCloudinary } from '~/service/cloudinary-api';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addVideoRecord } from '~/store/slice/video-slice';
 import { Loader } from '~/lib/icons/Loader';
+import { RootState } from '~/store/store';
+import { changeUser } from '~/store/slice/user-slice';
+import { UploadVideo } from '~/service/upload-api';
+import { HubConnection } from '@microsoft/signalr';
+import connectToSignalR from '~/utils/signal-r-connect';
+import { Textarea } from '~/components/ui/textarea';
 
 
 export default function VideoScreen() {
@@ -31,8 +37,49 @@ export default function VideoScreen() {
     const [isRecording, setIsRecording] = useState(false)
     const cameraRef = useRef<CameraView | null>(null)
     const [loading, setLoading] = useState(false)
+    const [connection, setConnection] = useState<HubConnection | null>(null);
+    const [translation, setTranslation] = useState<string[]>([])
 
     const dispatch = useDispatch()
+    const userId = useSelector((state: RootState) => state.userRecordSlice)
+
+    useEffect(() => {
+        if (userId == '') {
+            const newId = Date.now().toString()
+            dispatch(changeUser(newId));
+        };
+    }, [userId]);
+
+    useEffect(() => {
+        const setupConnection = async () => {
+            const res = await connectToSignalR(userId, 'notification');
+            if (res) {
+                res.serverTimeoutInMilliseconds = 1000 * 60000;
+                res.keepAliveIntervalInMilliseconds = 1000 * 10;
+                setConnection(res);
+            }
+            res?.on("SendMessage", (res: any) => {
+                if (res.statusResponse) {
+                    setPreview(null)
+                    setLoading(false)
+                    setTranslation(res.data)
+                } else {
+                    ToastAndroid.show('Failed to translate video please try again', ToastAndroid.SHORT)
+                }
+                console.log(res)
+                // setMessages((prevMessages) => [...prevMessages, message]);
+            });
+        };
+
+        if (!connection && userId !== '')
+            setupConnection();
+
+        // return () => {
+        //     if (connection) {
+        //         connection.stop();
+        //     }
+        // };
+    }, [connection]);
 
     const grantPermission = () => {
         requestPermission()
@@ -62,6 +109,8 @@ export default function VideoScreen() {
         setPreview(null)
         setVideo(null)
     }
+
+
 
     const handleRecordVideo = async () => {
         if (cameraRef.current) {
@@ -119,24 +168,39 @@ export default function VideoScreen() {
             setLoading(false)
             if (res.success) {
                 setVideo(res.data.url)
-                setPreview(null)
-                ToastAndroid.show('Upload successful', ToastAndroid.SHORT)
-                dispatch(addVideoRecord({ url: res.data.url as string, translation: 'aaaa' }))
+                // ToastAndroid.show('Upload successful', ToastAndroid.SHORT)
+                dispatch(addVideoRecord({ url: res.data.url as string, translation: 'Tôi là ai' }))
+                await handleTranslate(res.data.url)
             } else {
-                alert('Failed to use video please try again');
-
+                ToastAndroid.show('Failed to use video please try again', ToastAndroid.SHORT)
+                // alert('Failed to use video please try again');
             }
-            console.log(res.data.url)
         }
     }
 
-    console.log('video', preview)
+    const handleTranslate = async (url: string) => {
+        try {
+            const res = await UploadVideo({ Video: url, UserId: userId })
+            if (res) {
+                console.log(res)
+                if (res.success) {
+                    ToastAndroid.show('Video added to queue', ToastAndroid.SHORT)
+                    // setPreview(null)
+                } else {
+                    ToastAndroid.show('Failed to add video to queue', ToastAndroid.SHORT)
+                }
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
 
     if (isCameraOn && !video && !preview) {
         return (
             <View className='flex-1 w-full h-full'>
                 <CameraView
-                    // className=''
+                    // className=''1
                     mode='video'
                     ref={cameraRef}
                     style={styles.container}
@@ -171,7 +235,7 @@ export default function VideoScreen() {
             <View className='relative flex-1 p-0 items-center justify-center h-full'>
                 <VideoView style={styles.video} player={previewPlayer} contentFit='contain' allowsFullscreen allowsPictureInPicture />
                 <View className='absolute bottom-5 left-0 right-0 flex-row gap-1 items-center justify-center'>
-                    <Button variant={'ghost'} disabled={loading} onPress={() => setPreview(null)}>
+                    <Button variant={'ghost'} disabled={loading} onPress={clear}>
                         {loading ? (
                             <Loader className='text-foreground' />
                         ) : (
@@ -194,6 +258,11 @@ export default function VideoScreen() {
         return (
             <View className='relative flex-1 gap-2'>
                 <VideoView style={styles.video} player={videoPlayer} contentFit='contain' allowsFullscreen allowsPictureInPicture />
+                <View className='pl-5 pr-5 pt-5'>
+                    {translation.map((sentence, index) => (
+                        <Text key={index}>{sentence}</Text>
+                    ))}
+                </View>
                 <View className='pl-5 pr-5 pt-5 pb-10'>
                     <Button
                         className='flex-row gap-2 w-full'
@@ -215,6 +284,7 @@ export default function VideoScreen() {
                     className='flex-row gap-2 w-full'
                     variant={'outline'}
                     onPress={(!permission?.granted || !microphonePermission?.granted) ? grantPermission : () => setIsCameraOn(true)}
+                    disabled={!connection}
                 >
                     <Video className='text-foreground' size={17} />
                     <Text>Film Video</Text>
@@ -223,6 +293,7 @@ export default function VideoScreen() {
                     className='flex-row gap-2 w-full'
                     variant={'outline'}
                     onPress={pickVideoAsync}
+                    disabled={!connection}
                 >
                     <Clapperboard className='text-foreground' size={17} />
                     <Text>Upload Video</Text>
