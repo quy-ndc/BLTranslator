@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Text } from '~/components/ui/text';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Video } from '~/lib/icons/Video';
 import { Clapperboard } from '~/lib/icons/Clapperboard';
@@ -49,17 +49,11 @@ export default function VideoModule({ userId }: Prop) {
 
     const dispatch = useDispatch()
 
-    const a = async () => {
-        const aa = await Speech.getAvailableVoicesAsync()
-        console.log(aa)
-    }
-
     useEffect(() => {
         if (userId == '') {
             const newId = Date.now().toString()
             dispatch(changeUser(newId));
         }
-        a()
     }, [userId]);
 
     const { channel } = useChannel(`notification:${userId}`, `message-ai`, (message) => {
@@ -218,7 +212,7 @@ export default function VideoModule({ userId }: Prop) {
         setCurrentSentence(0);
         translations.forEach((tran, index) => {
             Speech.speak(tran, {
-                voice: 'en-US-default',
+                voice: Platform.OS == 'android' ? 'en-US-default' : 'com.apple.eloquence.en-US.Flo',
                 language: 'en-US',
                 onStart: () => setCurrentSentence(index + 1),
                 onDone: () => {

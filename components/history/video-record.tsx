@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
-import { TouchableOpacity, View   } from 'react-native';
+import { Platform, TouchableOpacity, View } from 'react-native';
 import { formatDate } from '~/utils/format-date';
 import { useRouter } from 'expo-router';
 import { Button } from '../ui/button';
@@ -49,7 +49,7 @@ const VideoRecord: React.FC<Props> = ({ id, url, translation, createdAt }) => {
 
   const handleRead = () => {
     Speech.speak(translation, {
-      voice: 'en-US-default',
+      voice: Platform.OS == 'android' ? 'en-US-default' : 'com.apple.eloquence.en-US.Flo',
       onStart: () => setIsReading(true),
       onStopped: () => setIsReading(false),
       onDone: () => setIsReading(false)

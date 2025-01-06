@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, ScrollView, Dimensions, View } from 'react-native';
+import { StyleSheet, ScrollView, Dimensions, View, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Button } from '~/components/ui/button';
 import { Textarea } from '~/components/ui/textarea';
@@ -37,7 +37,7 @@ export default function VideoRecordScreen() {
 
     const handleRead = () => {
         Speech.speak(translation as string, {
-            voice: 'en-US-default',
+            voice: Platform.OS == 'android' ? 'en-US-default' : 'com.apple.eloquence.en-US.Flo',
             onStart: () => setIsReading(true),
             onStopped: () => setIsReading(false),
             onDone: () => setIsReading(false)
