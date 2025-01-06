@@ -13,7 +13,7 @@ export default function HistoryScreen() {
   const imageRecords = useSelector((state: RootState) => state.imageRecordSlice)
   const videoRecords = useSelector((state: RootState) => state.videoReordSlice)
 
-  const [value, setValue] = React.useState("image");
+  const [value, setValue] = React.useState("video");
 
   return (
     <View className="flex-row w-full h-full p-6">
@@ -23,14 +23,14 @@ export default function HistoryScreen() {
         className="w-full mx-auto flex-col gap-3"
       >
         <TabsList className="flex-row w-full">
-          <TabsTrigger value="image" className="flex-1">
+          {/* <TabsTrigger value="image" className="flex-1">
             <Text>Image</Text>
-          </TabsTrigger>
+          </TabsTrigger> */}
           <TabsTrigger value="video" className="flex-1">
             <Text>Video</Text>
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="image" className="flex-col gap-3 items-center justify-center">
+        {/* <TabsContent value="image" className="flex-col gap-3 items-center justify-center">
           <ScrollView className="pt-3 pb-3">
             {imageRecords.map((rec) => (
               <ImageRecord
@@ -42,7 +42,7 @@ export default function HistoryScreen() {
               />
             ))}
           </ScrollView>
-        </TabsContent>
+        </TabsContent> */}
         <TabsContent value="video">
           <ScrollView className="pt-3 pb-3">
             {videoRecords.map((rec) => (

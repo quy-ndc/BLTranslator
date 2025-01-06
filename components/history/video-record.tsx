@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { TouchableOpacity, View, ToastAndroid } from 'react-native';
 import { formatDate } from '~/utils/format-date';
@@ -13,6 +13,8 @@ import { Text } from '../ui/text'
 import { removeVideoRecord } from '~/store/slice/video-slice';
 import { Headphones } from '~/lib/icons/Headphones';
 import * as Speech from 'expo-speech';
+import { truncateText } from '~/utils/truncate-text';
+import { Pause } from '~/lib/icons/Pause';
 
 
 type Props = {
@@ -26,6 +28,8 @@ const VideoRecord: React.FC<Props> = ({ id, url, translation, createdAt }) => {
 
   const router = useRouter()
   const dispatch = useDispatch()
+
+  const [isReading, setIsReading] = useState(false)
 
   const handleRecordClick = () => {
     router.push({
@@ -43,7 +47,12 @@ const VideoRecord: React.FC<Props> = ({ id, url, translation, createdAt }) => {
   }
 
   const handleRead = () => {
-    Speech.speak(translation)
+    Speech.speak(translation, {
+      voice: 'en-US-default',
+      onStart: () => setIsReading(true),
+      onStopped: () => setIsReading(false),
+      onDone: () => setIsReading(false)
+    })
   }
 
   const handleDelete = () => {
@@ -58,18 +67,24 @@ const VideoRecord: React.FC<Props> = ({ id, url, translation, createdAt }) => {
           <CardTitle>Translation on {formatDate(createdAt)}</CardTitle>
         </CardHeader>
         <CardContent>
-          <CardDescription style={{ fontSize: 17 }}>{translation}</CardDescription>
+          <CardDescription style={{ fontSize: 17 }}>{truncateText(translation, 30)}</CardDescription>
         </CardContent>
         <CardFooter>
           <View className='flex-row w-full align-center justify-between'>
             <View />
             <View className='flex-row'>
               <Button variant={'ghost'} onPress={handleCopy}>
-                <Copy className='text-foreground' size={17} />s
+                <Copy className='text-foreground' size={17} />
               </Button>
-              <Button variant={'ghost'} onPress={handleRead}>
-                <Headphones className='text-foreground' size={17} />
-              </Button>
+              {isReading ? (
+                <Button variant={'ghost'} onPress={() => Speech.stop()}>
+                  <Pause className='text-foreground' size={17} />
+                </Button>
+              ) : (
+                <Button variant={'ghost'} onPress={handleRead}>
+                  <Headphones className='text-foreground' size={17} />
+                </Button>
+              )}
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant={'ghost'}>

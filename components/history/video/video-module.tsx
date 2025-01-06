@@ -68,7 +68,11 @@ export default function VideoModule({ userId }: Prop) {
             case 'processing-success-event': {
                 setLoading(false)
                 setPreview(null)
+                const formattedTranslation = data.Data.Data
+                    .map((sentence: string) => sentence.charAt(0).toUpperCase() + sentence.slice(1).toLowerCase())
+                    .join(', ');
                 setTranslations(data.Data.Data)
+                dispatch(addVideoRecord({ url: video, translation: formattedTranslation }))
                 return;
             }
             default: {
@@ -165,7 +169,6 @@ export default function VideoModule({ userId }: Prop) {
             if (res.success) {
                 setVideo(res.data.url)
                 // ToastAndroid.show('Upload successful', ToastAndroid.SHORT)
-                dispatch(addVideoRecord({ url: res.data.url as string, translation: 'Tôi là ai' }))
                 await handleTranslate(res.data.url)
             } else {
                 ToastAndroid.show('Failed to use video please try again', ToastAndroid.SHORT)
@@ -193,16 +196,27 @@ export default function VideoModule({ userId }: Prop) {
     }
 
     const handleListen = () => {
-        setIsReading(true)
-        setMaxSentence(translations.length)
-        setCurrentSentence(0)
-        translations.forEach(tran => {
-            setCurrentSentence(currentSentence + 1)
-            Speech.speak(tran)
+        setIsReading(true);
+        setMaxSentence(translations.length);
+        setCurrentSentence(0);
+
+        translations.forEach((tran, index) => {
+            Speech.speak(tran,
+                {
+                    voice: 'en-US-default',
+                    onStart: () => setCurrentSentence(index + 1),
+                    onDone: () => {
+                        if (index + 1 === translations.length) {
+                            setCurrentSentence(0)
+                            setIsReading(false);
+                        }
+                    },
+                });
         });
-    }
+    };
 
     const handlePause = () => {
+        setCurrentSentence(0)
         setIsReading(false)
         Speech.stop()
     }
@@ -270,11 +284,11 @@ export default function VideoModule({ userId }: Prop) {
             <View className='relative flex-1 gap-2'>
                 <VideoView style={styles.video} player={videoPlayer} contentFit='contain' allowsFullscreen allowsPictureInPicture />
                 <View className='pl-5 pr-5 pt-5'>
-                    {translations.length > 0 && (
+                    {translations.length > 0 ? (
                         translations.map((tran, index) => (
-                            <Text className={`${currentSentence == index + 1 && 'text-orange-300'}`} key={index}>{tran}</Text>
+                            <Text className={`${currentSentence == index + 1 ? 'text-orange-300' : ''} pb-1 font-bold text-lg capitalize`} key={index}>{tran}</Text>
                         ))
-                    )}
+                    ) : null}
                 </View>
                 <View className='flex-row gap-2 pl-5 pr-5 pt-5 pb-10'>
                     <Button
@@ -293,7 +307,7 @@ export default function VideoModule({ userId }: Prop) {
                         {isReading ? (
                             <>
                                 <Pause className='text-foreground' size={17} />
-                                <Text>Pause</Text>
+                                <Text>Stop</Text>
                             </>
                         ) : (
                             <>

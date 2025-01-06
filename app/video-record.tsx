@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, ScrollView, Dimensions, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Button } from '~/components/ui/button';
@@ -10,6 +10,10 @@ import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader,
 import { useDispatch } from 'react-redux';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { removeVideoRecord } from '~/store/slice/video-slice';
+import { Headphones } from '~/lib/icons/Headphones';
+import * as Speech from 'expo-speech';
+import { Pause } from '~/lib/icons/Pause';
+
 
 
 export default function VideoRecordScreen() {
@@ -18,6 +22,8 @@ export default function VideoRecordScreen() {
     const dispatch = useDispatch()
 
     const { id, url, translation } = useLocalSearchParams();
+
+    const [isReading, setIsReading] = useState(false)
 
     const handleDelete = () => {
         router.back()
@@ -29,6 +35,14 @@ export default function VideoRecordScreen() {
         player.play();
     });
 
+    const handleRead = () => {
+        Speech.speak(translation as string, {
+            voice: 'en-US-default',
+            onStart: () => setIsReading(true),
+            onStopped: () => setIsReading(false),
+            onDone: () => setIsReading(false)
+        })
+    }
 
     return (
         <ScrollView className='flex-col' >
@@ -44,6 +58,18 @@ export default function VideoRecordScreen() {
                     <ChevronLeft className='text-foreground' size={18} />
                     <Text>Go back</Text>
                 </Button>
+                {isReading ? (
+                    <Button variant={'ghost'} className='flex-row gap-3' onPress={() => Speech.stop()}>
+                        <Pause className='text-foreground' size={17} />
+                        <Text>Stop</Text>
+                    </Button>
+                ) : (
+                    <Button variant={'ghost'} className='flex-row gap-3' onPress={handleRead}>
+                        <Headphones className='text-foreground' size={18} />
+                        <Text>Listen</Text>
+                    </Button>
+                )}
+
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button variant={'destructive'} className='flex-row gap-3'>
@@ -67,7 +93,7 @@ export default function VideoRecordScreen() {
                     </AlertDialogContent>
                 </AlertDialog>
             </View>
-        </ScrollView>
+        </ScrollView >
     );
 }
 
