@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, StyleSheet, ToastAndroid } from 'react-native';
+import { View, StyleSheet} from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { Camera } from '~/lib/icons/Camera';
@@ -16,6 +16,7 @@ import { UploadToCloudinary } from '~/service/cloudinary-api';
 import { useDispatch } from 'react-redux';
 import { addImageRecord } from '~/store/slice/image-slice';
 import { Loader } from '~/lib/icons/Loader';
+import Toast from 'react-native-toast-message';
 
 export default function ImageScreen() {
 
@@ -98,17 +99,18 @@ export default function ImageScreen() {
             if (res.success) {
                 setPhoto(res.data.url)
                 setPreview(null)
-                ToastAndroid.show('Upload successful', ToastAndroid.SHORT)
                 dispatch(addImageRecord({ url: res.data.url as string, translation: 'aaaa' }))
             } else {
-                alert('Failed to use image please try again');
+                Toast.show({
+                    type: 'error',
+                    text1: 'Failed to use image please try again',
+                })
             }
-            console.log(res.data.url)
         }
     }
 
-    console.log('preview', preview)
-    console.log('photo', photo)
+    // console.log('preview', preview)
+    // console.log('photo', photo)
 
     if (isCameraOn && !photo && !preview) {
         return (

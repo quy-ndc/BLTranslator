@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
-import { TouchableOpacity, View, ToastAndroid } from 'react-native';
+import { TouchableOpacity, View   } from 'react-native';
 import { formatDate } from '~/utils/format-date';
 import { useRouter } from 'expo-router';
 import { Button } from '../ui/button';
@@ -15,6 +15,7 @@ import { Headphones } from '~/lib/icons/Headphones';
 import * as Speech from 'expo-speech';
 import { truncateText } from '~/utils/truncate-text';
 import { Pause } from '~/lib/icons/Pause';
+import Toast from 'react-native-toast-message';
 
 
 type Props = {
@@ -57,7 +58,10 @@ const VideoRecord: React.FC<Props> = ({ id, url, translation, createdAt }) => {
 
   const handleDelete = () => {
     dispatch(removeVideoRecord(id))
-    ToastAndroid.show('Deleted from memory', ToastAndroid.SHORT)
+    Toast.show({
+      type: 'success',
+      text1: 'Deleted from memory',
+    })
   }
 
   return (

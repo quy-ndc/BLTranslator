@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Text } from '~/components/ui/text';
-import { View, StyleSheet, ToastAndroid } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Video } from '~/lib/icons/Video';
 import { Clapperboard } from '~/lib/icons/Clapperboard';
@@ -24,6 +24,7 @@ import { changeUser } from '~/store/slice/user-slice';
 import { UploadVideo } from '~/service/upload-api';
 import { useChannel } from 'ably/react';
 import * as Speech from 'expo-speech';
+import Toast from 'react-native-toast-message';
 
 
 
@@ -45,15 +46,20 @@ export default function VideoModule({ userId }: Prop) {
     const [translations, setTranslations] = useState<string[]>([])
     const [isReading, setIsReading] = useState(false)
     const [currentSentence, setCurrentSentence] = useState(0)
-    const [maxSentence, setMaxSentence] = useState(0)
 
     const dispatch = useDispatch()
+
+    const a = async () => {
+        const aa = await Speech.getAvailableVoicesAsync()
+        console.log(aa)
+    }
 
     useEffect(() => {
         if (userId == '') {
             const newId = Date.now().toString()
             dispatch(changeUser(newId));
-        };
+        }
+        a()
     }, [userId]);
 
     const { channel } = useChannel(`notification:${userId}`, `message-ai`, (message) => {
@@ -62,7 +68,10 @@ export default function VideoModule({ userId }: Prop) {
         switch (data.Type) {
             case 'processing-fail-event': {
                 setLoading(false)
-                ToastAndroid.show('Failed to translate video', ToastAndroid.SHORT)
+                Toast.show({
+                    type: 'error',
+                    text1: 'Failed to translate video',
+                })
                 return;
             }
             case 'processing-success-event': {
@@ -76,7 +85,10 @@ export default function VideoModule({ userId }: Prop) {
                 return;
             }
             default: {
-                ToastAndroid.show('Something went wrong', ToastAndroid.SHORT)
+                Toast.show({
+                    type: 'error',
+                    text1: 'Something unexpected went wrong',
+                })
                 return;
             }
         }
@@ -164,15 +176,14 @@ export default function VideoModule({ userId }: Prop) {
 
         const res = await UploadToCloudinary(data)
         if (res) {
-            // setLoading(false)
-            // console.log(res.data)
             if (res.success) {
                 setVideo(res.data.url)
-                // ToastAndroid.show('Upload successful', ToastAndroid.SHORT)
                 await handleTranslate(res.data.url)
             } else {
-                ToastAndroid.show('Failed to use video please try again', ToastAndroid.SHORT)
-                // alert('Failed to use video please try again');
+                Toast.show({
+                    type: 'error',
+                    text1: 'Failed to use video please try again',
+                })
             }
         }
     }
@@ -181,37 +192,42 @@ export default function VideoModule({ userId }: Prop) {
         try {
             const res = await UploadVideo({ Video: url, UserId: userId })
             if (res) {
-                // setLoading(false)
-                // console.log(res)
                 if (res.success) {
-                    ToastAndroid.show('Video added to queue', ToastAndroid.SHORT)
-                    // setPreview(null)
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Processing video',
+                    })
                 } else {
-                    ToastAndroid.show('Failed to add video to queue', ToastAndroid.SHORT)
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Failed to use video please try again',
+                    })
                 }
             }
         } catch (err) {
+            Toast.show({
+                type: 'error',
+                text1: 'Failed to use video please try again',
+            })
             console.log(err)
         }
     }
 
     const handleListen = () => {
         setIsReading(true);
-        setMaxSentence(translations.length);
         setCurrentSentence(0);
-
         translations.forEach((tran, index) => {
-            Speech.speak(tran,
-                {
-                    voice: 'en-US-default',
-                    onStart: () => setCurrentSentence(index + 1),
-                    onDone: () => {
-                        if (index + 1 === translations.length) {
-                            setCurrentSentence(0)
-                            setIsReading(false);
-                        }
-                    },
-                });
+            Speech.speak(tran, {
+                voice: 'en-US-default',
+                language: 'en-US',
+                onStart: () => setCurrentSentence(index + 1),
+                onDone: () => {
+                    if (index + 1 === translations.length) {
+                        setCurrentSentence(0)
+                        setIsReading(false);
+                    }
+                },
+            });
         });
     };
 
@@ -341,7 +357,7 @@ export default function VideoModule({ userId }: Prop) {
                     <Text>Upload Video</Text>
                 </Button>
             </View>
-        </View>
+        </View >
     )
 }
 
