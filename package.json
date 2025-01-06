@@ -13,7 +13,6 @@
     "postinstall": "npx tailwindcss -i ./global.css -o ./node_modules/.cache/nativewind/global.css"
   },
   "dependencies": {
-    "@microsoft/signalr": "^8.0.7",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-navigation/native": "^7.0.0",
     "@reduxjs/toolkit": "^2.4.0",
@@ -27,6 +26,7 @@
     "@rn-primitives/tabs": "^1.1.0",
     "@rn-primitives/tooltip": "~1.1.0",
     "@rn-primitives/types": "~1.1.0",
+    "ably": "^2.6.0",
     "axios": "^1.7.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
